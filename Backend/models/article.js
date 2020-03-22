@@ -8,7 +8,7 @@ var ArticleSchema = Schema({
     content: String,
     date: {
         type: Date,
-        default: Data.now
+        default: Date.now
     },
     image: String
 });
