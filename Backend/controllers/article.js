@@ -6,6 +6,15 @@ var Article = require('../models/article');
 
 var controller = {
     //ruta  o metodo de prueba para el API REST
+
+    health: (req, res) => {
+        return res.status(200).send({
+            message: 'OK'
+        });
+
+    },
+
+
     datosCurso: (req, res) => {
         var hola = req.body.hola;
 
@@ -77,9 +86,9 @@ var controller = {
     },
     getArticles: (req, res) => {
         var query = Article.find({});
-        
+
         var last = req.params.last;
-        
+
         console.log(last);
 
         if (last || last != undefined) {
@@ -108,9 +117,34 @@ var controller = {
                 articles
             });
         });
-        //
+    },
 
+    getArticle: (req, res) => {
+        //recoger el id de la url
+        var articleId = req.params.id;
+        console.log("getArticle " + articleId);
 
+        //comprobar que existe
+        if (!articleId || articleId == null) {
+            return res.status(404).send({
+                status: 'error',
+                message: 'No existe el articulo'
+            });
+        }
+
+        //buscar el articulo
+        Article.findById(articleId, (err, article) => {
+            if (err || !article) {
+                return res.status(404).send({
+                    status: 'error',
+                    message: 'No existe el articulos'
+                });
+            }
+            return res.status(200).send({
+                status: 'success',
+                article
+            });
+        });
     }
 }; //end controller
 
