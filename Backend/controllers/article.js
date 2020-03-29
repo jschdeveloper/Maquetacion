@@ -145,6 +145,68 @@ var controller = {
                 article
             });
         });
+    },
+
+    update: (req, res) => {
+        //recoger el id del articulo por la url
+        var articleId = req.params.id;
+
+        //recoger los datos por put
+        var params = req.body;
+
+        console.log(params);
+
+        //validar datos
+        try {
+            var validate_title = !validator.isEmpty(params.title);
+            var validate_content = !validator.isEmpty(params.content);
+
+        } catch (err) {
+            return res.status(200).send({
+                status: 'error',
+                message: 'faltan datos por enviar'
+            });
+        }
+
+        if (validate_title && validate_content) {
+            //find and update
+            Article.findOneAndUpdate({
+                    _id: articleId
+                }, params, {
+                    new: true
+                },
+                (err, articleUpdated) => {
+                    if (err) {
+                        return res.status(500).send({
+                            status: 'error',
+                            message: 'Error al actualizar'
+                        });
+                    }
+
+                    if (!articleUpdated) {
+                        return res.status(404).send({
+                            status: 'error',
+                            message: 'No existe el articulo'
+                        });
+                    }
+
+                    return res.status(200).send({
+                        status: 'success',
+                        article: articleUpdated
+                    });
+
+                });
+        } else {
+            //devolver respuesta
+            return res.status(200).send({
+                status: 'error',
+                message: 'La validacion no es correcta'
+            });
+        }
+
+
+
+
     }
 }; //end controller
 
