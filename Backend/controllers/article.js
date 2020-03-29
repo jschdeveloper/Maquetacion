@@ -315,7 +315,51 @@ var controller = {
                 });
             }
         });
-    }//end get image
+    }, //end get image
+    search: (req, res) => {
+        //obtener el string a buscar
+        var searchString = req.params.search;
+
+        //find or
+        Article.find({
+                "$or": [{
+                        "title": {
+                            "$regex": searchString,
+                            "$options": "i"
+                        }
+                    },
+                    {
+                        "content": {
+                            "$regex": searchString,
+                            "$options": "i"
+                        }
+                    },
+
+                ]
+            }).sort([
+                ['date', 'descending']
+            ])
+            .exec((err, articles) => {
+                if (err) {
+                    return res.status(500).send({
+                        status: 'error',
+                        message: 'Error en la peticion'
+                    });
+                }
+
+                if (!articles || articles.length <= 0) {
+                    return res.status(500).send({
+                        status: 'error',
+                        message: 'No hay articulos que coincidan con tu busqueda'
+                    });
+                }
+
+                return res.status(200).send({
+                    status: 'success',
+                    articles
+                });
+            });
+    }
 
 }; //end controller
 
